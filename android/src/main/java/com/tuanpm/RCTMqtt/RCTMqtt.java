@@ -403,7 +403,7 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
         message.setQos(qos);
         message.setRetained(retain);
         client.publish(topic, message);
-    } catch (UnsupportedEncodingException | MqttException e) {
+    } catch (MqttException e) {
         e.printStackTrace();
     }
 }
