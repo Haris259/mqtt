@@ -474,7 +474,7 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
                 .append(new String(message.getPayload())).append("  QoS:\t").append(message.getQos()).toString());
       android.util.Log.i(
     "regsiterFCMToken",
-    "---------------------------------------------ON ERROR => $errorCode : $errorMessage"
+    "---------------------------------------------ON ERROR => errorCode : errorMessage ${message.getPayload()}"
      )
 
 
@@ -494,7 +494,7 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
 
     private void sendEvent(final ReactContext reactContext, final String eventName, @Nullable WritableMap params) {
         params.putString("clientRef", this.clientRef);
-        reactContext.getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, params);
+        reactContext.getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, "talhaaaa");
     }
 
     private boolean isInsideWantedCodes(@NonNull final MqttException exception) {
