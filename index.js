@@ -1,4 +1,4 @@
-import {NativeEventEmitter, NativeModules} from 'react-native';
+import { NativeEventEmitter, NativeModules } from "react-native";
 
 var Mqtt = NativeModules.Mqtt;
 
@@ -17,7 +17,7 @@ var MqttClient = function (options, clientRef) {
 };
 
 MqttClient.prototype.on = function (event, callback) {
-  console.log('setup event', event);
+  console.log("setup event", event);
   this.eventHandler[event] = callback;
 };
 
@@ -75,7 +75,7 @@ module.exports = {
       var matches = options.uri.match(pattern);
       if (!matches) {
         throw new Error(
-          `Uri passed to createClient ${options.uri} doesn't match a known protocol (mqtt:// or ws://).`,
+          `Uri passed to createClient ${options.uri} doesn't match a known protocol (mqtt:// or ws://).`
         );
       }
       var protocol = matches[2];
@@ -84,13 +84,13 @@ module.exports = {
 
       options.port = parseInt(port);
       options.host = host;
-      options.protocol = 'tcp';
+      options.protocol = "tcp";
 
-      if (protocol == 'wss' || protocol == 'mqtts') {
+      if (protocol == "wss" || protocol == "mqtts") {
         options.tls = true;
       }
-      if (protocol == 'ws' || protocol == 'wss') {
-        options.protocol = 'ws';
+      if (protocol == "ws" || protocol == "wss") {
+        options.protocol = "ws";
       }
     }
 
@@ -100,9 +100,9 @@ module.exports = {
 
     /* Listen mqtt event */
     if (this.eventHandler === null) {
-      console.log('add mqtt_events listener');
-      this.eventHandler = emitter.addListener('mqtt_events', data =>
-        this.dispatchEvents(data),
+      console.log("add mqtt_events listener");
+      this.eventHandler = emitter.addListener("mqtt_events", (data) =>
+        this.dispatchEvents("tallhaaa")
       );
     }
     this.clients.push(client);

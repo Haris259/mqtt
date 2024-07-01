@@ -476,8 +476,7 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
     "regsiterFCMToken",
     "---------------------------------------------ON ERROR => errorCode : errorMessage ${message.getPayload()}"
      )
-
-
+     
         WritableMap data = Arguments.createMap();
         data.putString("topic", topic);
         data.putString("data",message.payload);
