@@ -469,19 +469,12 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
         // subscription made by the client
         // Called when a message arrives from the server that matches any subscription made by the client
 
-
         log(new StringBuilder("  Topic:\t").append(topic).append("  Message:\t")
                 .append(new String(message.getPayload())).append("  QoS:\t").append(message.getQos()).toString());
-      android.util.Log.i(
-    "regsiterFCMToken",
-    "---------------------------------------------ON ERROR => errorCode : errorMessage ${message.getPayload()}"
-     )
-     
+
         WritableMap data = Arguments.createMap();
         data.putString("topic", topic);
-        data.putString("data",message.payload);
-        val talha = String(message.payload, charset("UTF-8"));
-        data.putString("haris",talha);
+        data.putString("data", new String(message.getPayload()));
         data.putInt("qos", message.getQos());
         data.putBoolean("retain", message.isRetained());
 
@@ -493,7 +486,7 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
 
     private void sendEvent(final ReactContext reactContext, final String eventName, @Nullable WritableMap params) {
         params.putString("clientRef", this.clientRef);
-        reactContext.getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, "talhaaaa");
+        reactContext.getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, params);
     }
 
     private boolean isInsideWantedCodes(@NonNull final MqttException exception) {
