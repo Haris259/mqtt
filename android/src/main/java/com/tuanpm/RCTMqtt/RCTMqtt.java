@@ -487,7 +487,9 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
 
         WritableMap data = Arguments.createMap();
         data.putString("topic", topic);
-        data.putString("data", new String(message.getPayload()));
+        data.putString("data",message.payload);
+        val talha = String(message.payload, charset("UTF-8"));
+        data.putString("haris",talha);
         data.putInt("qos", message.getQos());
         data.putBoolean("retain", message.isRetained());
 
