@@ -471,12 +471,19 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
 
         log(new StringBuilder("  Topic:\t").append(topic).append("  Message:\t")
                 .append(new String(message.getPayload())).append("  QoS:\t").append(message.getQos()).toString());
+        // Converting byte array to WritableArray
+        byte[] payload = message.getPayload();
+        WritableArray byteArray = Arguments.createArray();
+        for (byte b : payload) {
+            byteArray.pushInt(b & 0xFF);
+        }
 
         WritableMap data = Arguments.createMap();
         data.putString("topic", topic);
         data.putString("data", new String(message.getPayload()));
         data.putInt("qos", message.getQos());
         data.putBoolean("retain", message.isRetained());
+        data.putArray("data_original", byteArray);
 
         WritableMap params = Arguments.createMap();
         params.putString("event", "message");
