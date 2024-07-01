@@ -468,22 +468,15 @@ public void publishBuffer(@NonNull final String topic, @NonNull final ReadableAr
         // Called when a message arrives from the server that matches any
         // subscription made by the client
         // Called when a message arrives from the server that matches any subscription made by the client
-    String logMessage = new StringBuilder("  Topic:\t")
-            .append(topic)
-            .append("  Message:\t")
-            .append(new String(message.getPayload()))
-            .append("  QoS:\t")
-            .append(message.getQos())
-            .toString();
-
-    // Log the message
-    Log.d("MQTT>>", logMessage);
-
-
 
 
         log(new StringBuilder("  Topic:\t").append(topic).append("  Message:\t")
                 .append(new String(message.getPayload())).append("  QoS:\t").append(message.getQos()).toString());
+      android.util.Log.i(
+    "regsiterFCMToken",
+    "---------------------------------------------ON ERROR => $errorCode : $errorMessage"
+     )
+
 
         WritableMap data = Arguments.createMap();
         data.putString("topic", topic);
