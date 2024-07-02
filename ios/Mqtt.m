@@ -198,21 +198,24 @@
     [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
 }
 
-- (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
-    // NSLog(@"message: %@", @{@"topic": topic, @"data": data});
-    // NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    // [self.emitter sendEventWithName:@"mqtt_events"
-    //                            body:@{
-    //                                   @"event": @"message",
-    //                                   @"clientRef": self.clientRef,
-    //                                   @"message": @{
-    //                                           @"topic": topic,
-    //                                           @"data": dataString,
-    //                                           @"data_original": data,
-    //                                           @"retain": [NSNumber numberWithBool:retained]
-    //                                           }
-    //                                   }];
+- (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
+    // New message received in topic
 }
+// - (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
+//     NSLog(@"message: %@", @{@"topic": topic, @"data": data});
+//     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//     [self.emitter sendEventWithName:@"mqtt_events"
+//                                body:@{
+//                                       @"event": @"message",
+//                                       @"clientRef": self.clientRef,
+//                                       @"message": @{
+//                                               @"topic": topic,
+//                                               @"data": dataString,
+//                                               @"data_original": data,
+//                                               @"retain": [NSNumber numberWithBool:retained]
+//                                               }
+//                                       }];
+// }
 
 - (void)dealloc {
     [self disconnect];
