@@ -1,13 +1,4 @@
-//
-//  Mqtt.m
-//  RCTMqtt
-//
-//  Created by Tuan PM on 2/13/16.
-//  Copyright © 2016 Tuan PM. All rights reserved.
-//  Updated by NaviOcean on 01/04/18
-//  Updated by Scott Spitler of KUHMUTE on 03/01/2021.
-//  Copyright © 2021 Scott Spitler. All rights reserved.
-//
+// Mqtt.m
 
 #import "Mqtt.h"
 #import <React/RCTEventEmitter.h>
@@ -18,44 +9,39 @@
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSString *clientRef;
-@property (nonatomic, strong) RCTEventEmitter * emitter;
+@property (nonatomic, strong) RCTEventEmitter *emitter;
 
 @end
 
 @implementation Mqtt
 
-
 - (id)init {
     if ((self = [super init])) {
         self.defaultOptions = @{
-                                @"host": @"localhost",
-                                @"port": @1883,
-                                @"protcol": @"tcp", //ws
-                                @"tls": @NO,
-                                @"keepalive": @120, //second
-                                @"clientId" : @"react-native-mqtt",
-                                @"protocolLevel": @4,
-                                @"clean": @YES,
-                                @"auth": @NO,
-                                @"user": @"",
-                                @"pass": @"",
-                                @"will": @NO,
-                                @"willMsg": [NSNull null],
-                                @"willtopic": @"",
-                                @"willQos": @0,
-                                @"willRetainFlag": @NO
-                                };
-        
+            @"host": @"localhost",
+            @"port": @1883,
+            @"protcol": @"tcp", //ws
+            @"tls": @NO,
+            @"keepalive": @120, //second
+            @"clientId" : @"react-native-mqtt",
+            @"protocolLevel": @4,
+            @"clean": @YES,
+            @"auth": @NO,
+            @"user": @"",
+            @"pass": @"",
+            @"will": @NO,
+            @"willMsg": [NSNull null],
+            @"willtopic": @"",
+            @"willQos": @0,
+            @"willRetainFlag": @NO
+        };
     }
-    
-    
-    
     return self;
 }
 
-- (instancetype) initWithEmitter:(RCTEventEmitter *) emitter
-                         options:(NSDictionary *) options
-                       clientRef:(NSString *) clientRef {
+- (instancetype)initWithEmitter:(RCTEventEmitter *)emitter
+                        options:(NSDictionary *)options
+                      clientRef:(NSString *)clientRef {
     self = [self init];
     self.emitter = emitter;
     self.clientRef = clientRef;
@@ -63,29 +49,32 @@
     for (NSString *key in options.keyEnumerator) { // Replace default options
         [self.options setValue:options[key] forKey:key];
     }
-
-   
-    
-    
     return self;
 }
 
-- (void) connect {
-    
+- (void)connect {
     MQTTSSLSecurityPolicy *securityPolicy = nil;
-    if(self.options[@"tls"]) {
+    if (self.options[@"tls"]) {
         securityPolicy = [MQTTSSLSecurityPolicy policyWithPinningMode:MQTTSSLPinningModeNone];
         securityPolicy.allowInvalidCertificates = YES;
     }
     
     NSData *willMsg = nil;
-    if(self.options[@"willMsg"] != [NSNull null]) {
+    if (self.options[@"willMsg"] != [NSNull null]) {
         willMsg = [self.options[@"willMsg"] dataUsingEncoding:NSUTF8StringEncoding];
     }
+    
     if (!self.manager) {
         dispatch_queue_t queue = dispatch_queue_create("com.hawking.app.anchor.mqtt", NULL);
         
-        self.manager = [[MQTTSessionManager alloc] initWithPersistence:NO maxWindowSize:MQTT_MAX_WINDOW_SIZE maxMessages:MQTT_MAX_MESSAGES maxSize:MQTT_MAX_SIZE maxConnectionRetryInterval:60.0 connectInForeground:NO streamSSLLevel:nil queue: queue];
+        self.manager = [[MQTTSessionManager alloc] initWithPersistence:NO
+                                                          maxWindowSize:MQTT_MAX_WINDOW_SIZE
+                                                            maxMessages:MQTT_MAX_MESSAGES
+                                                                maxSize:MQTT_MAX_SIZE
+                                               maxConnectionRetryInterval:60.0
+                                                     connectInForeground:NO
+                                                           streamSSLLevel:nil
+                                                                   queue:queue];
         self.manager.delegate = self;
         MQTTCFSocketTransport *transport = [[MQTTCFSocketTransport alloc] init];
         transport.host = [self.options valueForKey:@"host"];
@@ -110,18 +99,15 @@
                    certificates:nil
                   protocolLevel:MQTTProtocolVersion311
                  connectHandler:^(NSError *error) {
-         }];
-
+        }];
     } else {
         [self.manager connectToLast:^(NSError *error) {
         }];
     }
-   
 }
 
 - (void)sessionManager:(MQTTSessionManager *)sessonManager didChangeState:(MQTTSessionManagerState)newState {
     switch (newState) {
-            
         case MQTTSessionManagerStateClosed:
             [self.emitter sendEventWithName:@"mqtt_events"
                                        body:@{@"event": @"closed",
@@ -168,7 +154,7 @@
 
 - (void)messageDelivered:(UInt16)msgID {
     NSLog(@"messageDelivered");
-    NSString *codeString = [NSString stringWithFormat:@"%d",msgID];
+    NSString *codeString = [NSString stringWithFormat:@"%d", msgID];
     [self.emitter sendEventWithName:@"mqtt_events"
                                body:@{@"event": @"msgSent",
                                       @"clientRef": self.clientRef,
@@ -176,88 +162,92 @@
                                       }];
 }
 
-- (void) disconnect {
-    // [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+- (void)disconnect {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
     [self.manager disconnectWithDisconnectHandler:^(NSError *error) {
     }];
-    
 }
 
-- (BOOL) isConnected {
-    //NSLog(@"Trying to check for connection...");
-    if(self.manager.session.status == MQTTSessionStatusConnected) {
+- (BOOL)isConnected {
+    if (self.manager.session.status == MQTTSessionStatusConnected) {
         return true;
     }
     return false;
 }
 
-- (BOOL) isSubbed:(NSString *)topic {
-    //NSLog(@"Checking to see if listening to topic... %@", topic);
-    if([self.manager.subscriptions objectForKey:topic]) {
+- (BOOL)isSubbed:(NSString *)topic {
+    if ([self.manager.subscriptions objectForKey:topic]) {
         return true;
     }
     return false;
 }
-/*
-    Returns array of objects with keys:
-        -topic: type string
-        -qos  : type int
 
-    TODO:
-        Allocate all space before hand, remove "tmp" holding variable.
-        Still learning Objective C...
-*/
-
-- (NSMutableArray *) getTopics {
-    //NSLog(@"Trying to pull all connected topics....");
-    NSMutableArray * ret;
-    int i = 0;
-    for(id key in self.manager.subscriptions) {
-        id keySet = [NSDictionary sharedKeySetForKeys:@[@"topic", @"qos"]];
-        NSMutableDictionary *tmp = [NSMutableDictionary dictionaryWithSharedKeySet:keySet];
+- (NSMutableArray *)getTopics {
+    NSMutableArray *ret = [NSMutableArray array];
+    for (id key in self.manager.subscriptions) {
+        NSMutableDictionary *tmp = [NSMutableDictionary dictionary];
         tmp[@"topic"] = key;
         tmp[@"qos"] = [self.manager.subscriptions objectForKey:key];
-        ret[i] = tmp;
-        i++;
+        [ret addObject:tmp];
     }
     return ret;
 }
 
-- (void) subscribe:(NSString *)topic qos:(NSNumber *)qos {
+- (void)subscribe:(NSString *)topic qos:(NSNumber *)qos {
     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
-    [subscriptions setObject:qos forKey: topic];
+    [subscriptions setObject:qos forKey:topic];
     [self.manager setSubscriptions:subscriptions];
 }
 
-- (void) unsubscribe:(NSString *)topic {
+- (void)unsubscribe:(NSString *)topic {
     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
-    [subscriptions removeObjectForKey: topic];
+    [subscriptions removeObjectForKey:topic];
     [self.manager setSubscriptions:subscriptions];
 }
 
-- (void) publish:(NSString *) topic data:(NSData *)data qos:(NSNumber *)qos retain:(BOOL) retain {
+- (void)publish:(NSString *)topic data:(NSData *)data qos:(NSNumber *)qos retain:(BOOL)retain {
     [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
 }
 
-- (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
-    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+- (void)handleMessage:(id)data onTopic:(NSString *)topic retained:(BOOL)retained {
+    if ([data isKindOfClass:[NSArray class]]) {
+        [self handleMessageArray:data onTopic:topic retained:retained];
+    } else if ([data isKindOfClass:[NSData class]]) {
+        NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        [self.emitter sendEventWithName:@"mqtt_events"
+                                   body:@{@"event": @"message",
+                                          @"clientRef": self.clientRef,
+                                          @"message": @{
+                                                  @"topic": topic,
+                                                  @"data": dataString,
+                                                  @"retain": [NSNumber numberWithBool:retained]
+                                                  }
+                                          }];
+    }
+}
+
+- (void)handleMessageArray:(NSArray *)dataArray onTopic:(NSString *)topic retained:(BOOL)retained {
+    NSMutableArray *dataStringArray = [NSMutableArray array];
+    
+    for (NSData *data in dataArray) {
+        NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        if (dataString) {
+            [dataStringArray addObject:dataString];
+        }
+    }
+    
     [self.emitter sendEventWithName:@"mqtt_events"
-                               body:@{
-                                      @"event": @"message",
+                               body:@{@"event": @"message",
                                       @"clientRef": self.clientRef,
                                       @"message": @{
                                               @"topic": topic,
-                                              @"data": dataString,
+                                              @"data": dataStringArray,
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       }];
-    
 }
 
-
-- (void)dealloc
-{
+- (void)dealloc {
     [self disconnect];
 }
 
