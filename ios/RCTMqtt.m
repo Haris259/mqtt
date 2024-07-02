@@ -7,21 +7,18 @@
 //  Updated by Scott Spitler of KUHMUTE on 03/01/2021.
 //  Copyright © 2021 Scott Spitler. All rights reserved.
 //
-//Package dependencies
+// Package dependencies
 #import <React/RCTBridgeModule.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <React/RCTEventDispatcher.h>
-//Project imports
+// Project imports
 #import "RCTMqtt.h"
 #import "Mqtt.h"
-
-
 
 @interface RCTMqtt ()
 @property NSMutableDictionary *clients;
 @end
-
 
 @implementation RCTMqtt
 {
@@ -30,20 +27,16 @@
 
 RCT_EXPORT_MODULE();
 
-
-+ (BOOL) requiresMainQueueSetup{
++ (BOOL)requiresMainQueueSetup {
     return NO;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     if ((self = [super init])) {
         _clients = [[NSMutableDictionary alloc] init];
     }
     return self;
-    
 }
-
 
 - (void)sendEventWithName:(NSString *)name body:(id)body {
     if (hasListeners && self.bridge) { // Only send events if anyone is listening
@@ -56,48 +49,41 @@ RCT_EXPORT_MODULE();
 }
 
 // Will be called when this module's first listener is added.
--(void)startObserving {
+- (void)startObserving {
     hasListeners = YES;
     // Set up any upstream listeners or background tasks as necessary
 }
 
 // Will be called when this module's last listener is removed, or on dealloc.
--(void)stopObserving {
+- (void)stopObserving {
     hasListeners = NO;
     // Remove upstream listeners, stop unnecessary background tasks
 }
 
-RCT_EXPORT_METHOD(createClient:(NSDictionary *) options
+RCT_EXPORT_METHOD(createClient:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    
     NSString *clientRef = [[NSProcessInfo processInfo] globallyUniqueString];
-    
-    Mqtt *client = [[Mqtt allocWithZone: nil] initWithEmitter:self options:options clientRef:clientRef];
-    
+    Mqtt *client = [[Mqtt allocWithZone:nil] initWithEmitter:self options:options clientRef:clientRef];
     [[self clients] setObject:client forKey:clientRef];
     resolve(clientRef);
-    
 }
 
-RCT_EXPORT_METHOD(removeClient:(nonnull NSString *) clientRef) {
+RCT_EXPORT_METHOD(removeClient:(nonnull NSString *)clientRef) {
     [[self clients] removeObjectForKey:clientRef];
 }
 
-
-RCT_EXPORT_METHOD(connect:(nonnull NSString *) clientRef) {
+RCT_EXPORT_METHOD(connect:(nonnull NSString *)clientRef) {
     [[[self clients] objectForKey:clientRef] connect];
 }
 
-RCT_EXPORT_METHOD(disconnect:(nonnull NSString *) clientRef) {
+RCT_EXPORT_METHOD(disconnect:(nonnull NSString *)clientRef) {
     [[[self clients] objectForKey:clientRef] disconnect];
 }
 
-RCT_EXPORT_METHOD(isConnected:(nonnull NSString *) clientRef resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    //RCTLogInfo(@"Bridge handling call to core for isConnected");
-    if([[self clients] objectForKey:clientRef]) {
+RCT_EXPORT_METHOD(isConnected:(nonnull NSString *)clientRef resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if ([[self clients] objectForKey:clientRef]) {
         BOOL conn = [[[self clients] objectForKey:clientRef] isConnected];
-        //RCTLogInfo(@"Client: %@ isConnected: %s", clientRef, conn ? "true" : "false");
         resolve(@(conn));
     } else {
         NSError *error = [[NSError alloc] initWithDomain:@"com.kuhmute.kca" code:404 userInfo:@{@"Error reason": @"Client Not Found"}];
@@ -105,24 +91,19 @@ RCT_EXPORT_METHOD(isConnected:(nonnull NSString *) clientRef resolver:(RCTPromis
     }
 }
 
-RCT_EXPORT_METHOD(isSubbed:(nonnull NSString *) clientRef:(nonnull NSString*)topic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    //RCTLogInfo(@"Bridge handling call to core for topic: %@", topic);
-    if([[self clients] objectForKey:clientRef]) {
-        BOOL subbed = [[[self clients] objectForKey:clientRef] isSubbed:clientRef];
-        //RCTLogInfo(@"Client: %@ isSubbed: %s", clientRef, subbed ? "true" : "false");
+RCT_EXPORT_METHOD(isSubbed:(nonnull NSString *)clientRef topic:(nonnull NSString *)topic resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if ([[self clients] objectForKey:clientRef]) {
+        BOOL subbed = [[[self clients] objectForKey:clientRef] isSubbed:topic];
         resolve(@(subbed));
     } else {
-        
         NSError *error = [[NSError alloc] initWithDomain:@"com.kuhmute.kca" code:404 userInfo:@{@"Error reason": @"Client Not Found"}];
         reject(@"client_not_found", @"This client doesn't exist", error);
     }
 }
 
-RCT_EXPORT_METHOD(getTopics:(nonnull NSString *) clientRef resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    //RCTLogInfo(@"Bridge handling call to core for client: %@", clientRef);
-    if([[self clients] objectForKey:clientRef]) {
+RCT_EXPORT_METHOD(getTopics:(nonnull NSString *)clientRef resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if ([[self clients] objectForKey:clientRef]) {
         NSMutableArray *ret = [[[self clients] objectForKey:clientRef] getTopics];
-        //RCTLogInfo(@"Client: %@ topics: %@", clientRef, ret);
         resolve(ret);
     } else {
         NSError *error = [[NSError alloc] initWithDomain:@"com.kuhmute.kca" code:404 userInfo:@{@"Error reason": @"Client Not Found"}];
@@ -130,79 +111,58 @@ RCT_EXPORT_METHOD(getTopics:(nonnull NSString *) clientRef resolver:(RCTPromiseR
     }
 }
 
-
-
 RCT_EXPORT_METHOD(disconnectAll) {
     if (self.clients.count > 0) {
-        for(NSString* aClientRef in self.clients) {
+        for (NSString *aClientRef in self.clients) {
             [[[self clients] objectForKey:aClientRef] disconnect];
         }
     }
 }
 
-RCT_EXPORT_METHOD(subscribe:(nonnull NSString *) clientRef topic:(NSString *)topic qos:(nonnull NSNumber *)qos) {
+RCT_EXPORT_METHOD(subscribe:(nonnull NSString *)clientRef topic:(NSString *)topic qos:(nonnull NSNumber *)qos) {
     [[[self clients] objectForKey:clientRef] subscribe:topic qos:qos];
 }
 
-RCT_EXPORT_METHOD(unsubscribe:(nonnull NSString *) clientRef topic:(NSString *)topic) {
+RCT_EXPORT_METHOD(unsubscribe:(nonnull NSString *)clientRef topic:(NSString *)topic) {
     [[[self clients] objectForKey:clientRef] unsubscribe:topic];
 }
 
-RCT_EXPORT_METHOD(publish:(nonnull NSString *) clientRef topic:(NSString *)topic data:(NSArray<NSNumber *> *)data qos:(nonnull NSNumber *)qos retain:(BOOL)retain) {
+RCT_EXPORT_METHOD(publish:(nonnull NSString *)clientRef topic:(NSString *)topic data:(NSArray<NSNumber *> *)data qos:(nonnull NSNumber *)qos retain:(BOOL)retain) {
     [[[self clients] objectForKey:clientRef] publish:topic
                                               data:data
-                                              // data:[data dataUsingEncoding:NSUTF8StringEncoding]
                                               qos:qos
-                                              retain:retain];
-    
+                                            retain:retain];
 }
-////////// publishBuffer start
 
-
-@interface RCT_EXTERN_MODULE(MQTTModule, NSObject)
-RCT_EXTERN_METHOD(publishBuffer:(nonnull NSString *)clientRef 
-                           topic:(NSString *)topic 
-                            data:(NSArray<NSNumber *> *)data 
-                             qos:(nonnull NSNumber *)qos 
-                          retain:(BOOL)retain)
-@end
-
-@implementation MQTTModule
-
+// publishBuffer start
 RCT_EXPORT_METHOD(publishBuffer:(nonnull NSString *)clientRef 
                           topic:(NSString *)topic 
                            data:(NSArray<NSNumber *> *)data 
                             qos:(nonnull NSNumber *)qos 
                          retain:(BOOL)retain) {
-  NSData *dataToSend = [self convertArrayToNSData:data];
-  
-  [[[self clients] objectForKey:clientRef] publish:topic
+    NSData *dataToSend = [self convertArrayToNSData:data];
+    
+    [[[self clients] objectForKey:clientRef] publish:topic
                                                data:dataToSend
                                                 qos:qos
                                              retain:retain];
 }
 
 - (NSData *)convertArrayToNSData:(NSArray<NSNumber *> *)array {
-  NSMutableData *data = [NSMutableData dataWithCapacity:[array count]];
-  for (NSNumber *number in array) {
-    uint8_t byte = [number unsignedCharValue];
-    [data appendBytes:&byte length:1];
-  }
-  return data;
+    NSMutableData *data = [NSMutableData dataWithCapacity:[array count]];
+    for (NSNumber *number in array) {
+        uint8_t byte = [number unsignedCharValue];
+        [data appendBytes:&byte length:1];
+    }
+    return data;
 }
+// publishBuffer end
 
-@end
-
-
-///////////Publish buffer end
-
-- (void)invalidate
-{
+- (void)invalidate {
     [self disconnectAll];
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
 }
 
 @end
