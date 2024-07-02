@@ -199,19 +199,19 @@
 }
 
 - (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
-    NSLog(@"message: %@", @{@"topic": topic, @"data": data});
-    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [self.emitter sendEventWithName:@"mqtt_events"
-                               body:@{
-                                      @"event": @"message",
-                                      @"clientRef": self.clientRef,
-                                      @"message": @{
-                                              @"topic": topic,
-                                              @"data": dataString,
-                                              @"data_original": data,
-                                              @"retain": [NSNumber numberWithBool:retained]
-                                              }
-                                      }];
+    // NSLog(@"message: %@", @{@"topic": topic, @"data": data});
+    // NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    // [self.emitter sendEventWithName:@"mqtt_events"
+    //                            body:@{
+    //                                   @"event": @"message",
+    //                                   @"clientRef": self.clientRef,
+    //                                   @"message": @{
+    //                                           @"topic": topic,
+    //                                           @"data": dataString,
+    //                                           @"data_original": data,
+    //                                           @"retain": [NSNumber numberWithBool:retained]
+    //                                           }
+    //                                   }];
 }
 
 - (void)dealloc {
