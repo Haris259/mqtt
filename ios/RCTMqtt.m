@@ -148,13 +148,53 @@ RCT_EXPORT_METHOD(unsubscribe:(nonnull NSString *) clientRef topic:(NSString *)t
     [[[self clients] objectForKey:clientRef] unsubscribe:topic];
 }
 
-RCT_EXPORT_METHOD(publish:(nonnull NSString *) clientRef topic:(NSString *)topic data:(NSString*)data qos:(nonnull NSNumber *)qos retain:(BOOL)retain) {
+RCT_EXPORT_METHOD(publish:(nonnull NSString *) clientRef topic:(NSString *)topic data:(NSArray<NSNumber *> *)data qos:(nonnull NSNumber *)qos retain:(BOOL)retain) {
     [[[self clients] objectForKey:clientRef] publish:topic
-                                                data:[data dataUsingEncoding:NSUTF8StringEncoding]
-                                                 qos:qos
+                                              data:data
+                                              // data:[data dataUsingEncoding:NSUTF8StringEncoding]
+                                              qos:qos
                                               retain:retain];
     
 }
+////////// publishBuffer start
+
+
+@interface RCT_EXTERN_MODULE(MQTTModule, NSObject)
+RCT_EXTERN_METHOD(publishBuffer:(nonnull NSString *)clientRef 
+                           topic:(NSString *)topic 
+                            data:(NSArray<NSNumber *> *)data 
+                             qos:(nonnull NSNumber *)qos 
+                          retain:(BOOL)retain)
+@end
+
+@implementation MQTTModule
+
+RCT_EXPORT_METHOD(publishBuffer:(nonnull NSString *)clientRef 
+                          topic:(NSString *)topic 
+                           data:(NSArray<NSNumber *> *)data 
+                            qos:(nonnull NSNumber *)qos 
+                         retain:(BOOL)retain) {
+  NSData *dataToSend = [self convertArrayToNSData:data];
+  
+  [[[self clients] objectForKey:clientRef] publish:topic
+                                               data:dataToSend
+                                                qos:qos
+                                             retain:retain];
+}
+
+- (NSData *)convertArrayToNSData:(NSArray<NSNumber *> *)array {
+  NSMutableData *data = [NSMutableData dataWithCapacity:[array count]];
+  for (NSNumber *number in array) {
+    uint8_t byte = [number unsignedCharValue];
+    [data appendBytes:&byte length:1];
+  }
+  return data;
+}
+
+@end
+
+
+///////////Publish buffer end
 
 - (void)invalidate
 {
