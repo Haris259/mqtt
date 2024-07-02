@@ -201,15 +201,16 @@
 
 
 - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
-    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"dataStringMusab");
+    // NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
      [self.emitter sendEventWithName:@"mqtt_events"
                                body:@{
                                       @"event": @"message",
                                       @"clientRef": self.clientRef,
                                       @"message": @{
                                               @"topic": topic,
-                                               @"data_original": data,
-                                                  @"data": dataString,
+                                            @"data_original": @"Talha",
+                                              @"data": @"Talha",
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       }];
