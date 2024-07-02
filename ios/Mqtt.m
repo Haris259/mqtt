@@ -199,6 +199,9 @@
     [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
 }
 - (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
+       NSLog(@"message": @{
+                                              @"topic": data,
+                                              });
     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     [self.emitter sendEventWithName:@"mqtt_events"
                                body:@{
