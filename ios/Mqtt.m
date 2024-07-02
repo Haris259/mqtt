@@ -192,12 +192,15 @@
     [subscriptions removeObjectForKey: topic];
     [self.manager setSubscriptions:subscriptions];
 }
-- (void) publish:(NSString *) topic data:(NSData *)data qos:(NSNumber *)qos retain:(BOOL) retain {
+// - (void) publish:(NSString *) topic data:(NSData *)data qos:(NSNumber *)qos retain:(BOOL) retain {
+//     [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
+// }
+- (void)publish:(NSString *)topic data:(NSData *)data qos:(NSNumber *)qos retain:(BOOL)retain {
     [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
 }
-- (void)publishBuffer:(NSString *)topic data:(NSArray<NSNumber *> *)data qos:(NSNumber *)qos retain:(BOOL)retain {
-    [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
-}
+// - (void)publishBuffer:(NSString *)topic data:(NSArray<NSNumber *> *)data qos:(NSNumber *)qos retain:(BOOL)retain {
+//     [self.manager sendData:data topic:topic qos:[qos intValue] retain:retain];
+// }
 
 - (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
        NSLog(@"message": @{

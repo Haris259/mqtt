@@ -155,29 +155,31 @@ RCT_EXPORT_METHOD(publish:(nonnull NSString *) clientRef topic:(NSString *)topic
                                               retain:retain];
     
 }
-////////// publishBuffer start
- RCT_EXPORT_METHOD(publishBuffer:(nonnull NSString *)clientRef 
-                        topic:(NSString *)topic 
-                    dataArray:(NSArray<NSString *> *)dataArray 
-                          qos:(nonnull NSNumber *)qos 
-                       retain:(BOOL)retain) 
-{
-     for (NSString *data in dataArray) {
-         NSData *dataToSend = [data dataUsingEncoding:NSUTF8StringEncoding];
-         [[[self clients] objectForKey:clientRef] publishBuffer:topic
-                                                          data:dataToSend
-                                                           qos:qos
-                                                        retain:retain];
-    }
+
+
+// publishBuffer start
+RCT_EXPORT_METHOD(publishBuffer:(nonnull NSString *)clientRef 
+                          topic:(NSString *)topic 
+                           data:(NSArray<NSNumber *> *)data 
+                            qos:(nonnull NSNumber *)qos 
+                         retain:(BOOL)retain) {
+    NSData *dataToSend = [self convertArrayToNSData:data];
+    
+    [[[self clients] objectForKey:clientRef] publish:topic
+                                               data:dataToSend
+                                                qos:qos
+                                             retain:retain];
 }
 
-
-
-
-
-
-
-///////////Publish buffer end
+- (NSData *)convertArrayToNSData:(NSArray<NSNumber *> *)array {
+    NSMutableData *data = [NSMutableData dataWithCapacity:[array count]];
+    for (NSNumber *number in array) {
+        uint8_t byte = [number unsignedCharValue];
+        [data appendBytes:&byte length:1];
+    }
+    return data;
+}
+// publishBuffer end
 
 - (void)invalidate
 {
