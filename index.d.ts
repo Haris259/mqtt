@@ -30,7 +30,7 @@ export class IMqttClient {
 
 	on(
 		event: 'message',
-		cb: (msg: { data: string; qos: QoS; retain: boolean; topic: string }) => void,
+		cb: (msg: { data: string; data_original:string; qos: QoS; retain: boolean; topic: string }) => void,
 	): void;
 
 	on(event: 'connect', cb: (msg: { reconnect: boolean }) => void): void;
