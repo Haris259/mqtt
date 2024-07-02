@@ -208,7 +208,7 @@
                                       @"message": @{
                                               @"topic": topic,
                                               @"data": dataString,
-                                              @"data_original": dataString,
+                                              @"data_original": data,
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       }];
