@@ -181,18 +181,13 @@
     }
     return ret;
 }
-[session subscribeToTopic:@"kluger_send_july_mid" atLevel:MQTTQosLevelExactlyOnce subscribeHandler:^(NSError *error, NSArray<NSNumber *> *gQoss) {
-    if (error) {
-        NSLog(@"Subscription failed %@", error.localizedDescription);
-    } else {
-        NSLog(@"Subscription sucessfull! Granted Qos: %@", gQoss);
-    }
- }];
-// - (void)subscribe:(NSString *)topic qos:(NSNumber *)qos {
-//     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
-//     [subscriptions setObject:qos forKey:topic];
-//     [self.manager setSubscriptions:subscriptions];
-// }
+
+- (void)subscribe:(NSString *)topic qos:(NSNumber *)qos {
+    NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
+    [subscriptions setObject:qos forKey:topic];
+    [self.manager setSubscriptions:subscriptions];
+    [self.manager startObserving];
+}
 
 - (void)unsubscribe:(NSString *)topic {
     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
@@ -206,48 +201,17 @@
 
 
 
-// - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
-//     NSLog(@"dataStringMusab");
-//     // NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-//      [self.emitter sendEventWithName:@"mqtt_events"
-//                                body:@{
-//                                       @"event": @"message",
-//                                       @"clientRef": self.clientRef,
-//                                       @"message": @{
-//                                               @"topic": topic,
-//                                             @"data_original": @"Talha",
-//                                               @"data": @"Talha",
-//                                               @"retain": [NSNumber numberWithBool:retained]
-//                                               }
-//                                       }];
-// }
-
-// - (void)dealloc {
-//     [self disconnect];
-// }
-
-// @end
-// - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
-//                                 body:@{
-//                                       @"event": @"message",
-//                                       @"clientRef": self.clientRef,
-//                                       @"message": @{
-//                                               @"topic": topic,
-//                                               @"data_original": data,
-//                                               @"retain": [NSNumber numberWithBool:retained]
-//                                               }
-// }
-- (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
-    NSLog(@"message: %@", @{@"topic": topic, @"data": data});
+- (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
+    NSLog(@"dataStringMusab");
     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [self.emitter sendEventWithName:@"mqtt_events"
+     [self.emitter sendEventWithName:@"mqtt_events"
                                body:@{
                                       @"event": @"message",
                                       @"clientRef": self.clientRef,
                                       @"message": @{
                                               @"topic": topic,
-                                              @"data": dataString,
-                                              @"data_original": data,
+                                            @"data_original": @"Talha",
+                                              @"data": @"Talha",
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       }];
@@ -258,3 +222,34 @@
 }
 
 @end
+// - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
+//                                 body:@{
+//                                       @"event": @"message",
+//                                       @"clientRef": self.clientRef,
+//                                       @"message": @{
+//                                               @"topic": topic,
+//                                               @"data_original": data,
+//                                               @"retain": [NSNumber numberWithBool:retained]
+//                                               }
+// }
+//- (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
+//    NSLog(@"message: %@", @{@"topic": topic, @"data": data});
+//    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//    [self.emitter sendEventWithName:@"mqtt_events"
+//                               body:@{
+//                                      @"event": @"message",
+//                                      @"clientRef": self.clientRef,
+//                                      @"message": @{
+//                                              @"topic": topic,
+//                                              @"data": dataString,
+//                                              @"data_original": data,
+//                                              @"retain": [NSNumber numberWithBool:retained]
+//                                              }
+//                                      }];
+}
+
+// - (void)dealloc {
+//     [self disconnect];
+// }
+
+// @end
