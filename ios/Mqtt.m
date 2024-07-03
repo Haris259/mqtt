@@ -245,7 +245,6 @@
 //                                              @"retain": [NSNumber numberWithBool:retained]
 //                                              }
 //                                      }];
-}
 
 // - (void)dealloc {
 //     [self disconnect];

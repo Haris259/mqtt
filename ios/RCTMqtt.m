@@ -39,6 +39,7 @@ RCT_EXPORT_MODULE();
 {
     if ((self = [super init])) {
         _clients = [[NSMutableDictionary alloc] init];
+          hasListeners = YES; // Set hasListeners to true by default
     }
     return self;
     
@@ -143,7 +144,6 @@ RCT_EXPORT_METHOD(disconnectAll) {
 
 RCT_EXPORT_METHOD(subscribe:(nonnull NSString *) clientRef topic:(NSString *)topic qos:(nonnull NSNumber *)qos) {
     [[[self clients] objectForKey:clientRef] subscribe:topic qos:qos];
-       [self startObserving];
 }
 
 RCT_EXPORT_METHOD(unsubscribe:(nonnull NSString *) clientRef topic:(NSString *)topic) {
