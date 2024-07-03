@@ -47,10 +47,10 @@ RCT_EXPORT_MODULE();
 
 
 - (void)sendEventWithName:(NSString *)name body:(id)body {
-    if (hasListeners && self.bridge) { // Only send events if anyone is listening
+    // if (hasListeners && self.bridge) { // Only send events if anyone is listening
         NSLog(@"Sending event: %@ with body: %@", name, body);
         [super sendEventWithName:name body:body];
-    }
+    // }
 }
 
 - (NSArray<NSString *> *)supportedEvents {
