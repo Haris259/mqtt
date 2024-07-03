@@ -186,7 +186,6 @@
     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
     [subscriptions setObject:qos forKey:topic];
     [self.manager setSubscriptions:subscriptions];
-    [self.manager startObserving];
 }
 
 - (void)unsubscribe:(NSString *)topic {

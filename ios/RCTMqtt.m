@@ -47,6 +47,7 @@ RCT_EXPORT_MODULE();
 
 - (void)sendEventWithName:(NSString *)name body:(id)body {
     if (hasListeners && self.bridge) { // Only send events if anyone is listening
+        NSLog(@"Sending event: %@ with body: %@", name, body);
         [super sendEventWithName:name body:body];
     }
 }
@@ -142,6 +143,7 @@ RCT_EXPORT_METHOD(disconnectAll) {
 
 RCT_EXPORT_METHOD(subscribe:(nonnull NSString *) clientRef topic:(NSString *)topic qos:(nonnull NSNumber *)qos) {
     [[[self clients] objectForKey:clientRef] subscribe:topic qos:qos];
+       [self startObserving];
 }
 
 RCT_EXPORT_METHOD(unsubscribe:(nonnull NSString *) clientRef topic:(NSString *)topic) {
