@@ -133,14 +133,7 @@
             break;
         }
         case MQTTSessionManagerStateStarting:
-        {
-    [self.emitter sendEventWithName:@"mqtt_events"
-                                       body:@{@"event": @"Starting",
-                                              @"clientRef": self.clientRef,
-                                              @"message": errorMsg
-                                              }];
-            break;
-        }
+
         default:
             break;
     }
@@ -209,24 +202,34 @@
 
 
 - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
+   
+}
+- (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
     NSLog(@"dataStringMusab");
       dispatch_queue_t queue = dispatch_queue_create("com.hawking.app.anchor.mqtt", NULL);
-    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    const unsigned char *bytes = [data bytes];
+        NSUInteger length = [data length];
+        NSMutableArray *arrayByte = [NSMutableArray arrayWithCapacity:length];
+        
+        for (NSUInteger i = 0; i < length; i++) {
+            [arrayByte addObject:@(bytes[i])];
+        }
      NSDictionary *body=@{
                         @"event": @"message",
                                       @"clientRef": self.clientRef,
                                       @"message": @{
                                               @"topic": topic,
-                                            @"data_original": @"Talha",
-                                              @"data": @"Talha",
+                                            @"data_original":arrayByte,
+                                              @"data": @"",
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       };
      [self.emitter sendEventWithName:@"mqtt_events"
                                body:body
                                       ];
-}
 
+    
+}
 - (void)dealloc {
     [self disconnect];
 }
