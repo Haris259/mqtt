@@ -200,27 +200,27 @@
 
 
 
-- (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
-    NSLog(@"dataStringMusab");
-    // NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-     [self.emitter sendEventWithName:@"mqtt_events"
-                               body:@{
-                                      @"event": @"message",
-                                      @"clientRef": self.clientRef,
-                                      @"message": @{
-                                              @"topic": topic,
-                                            @"data_original": @"Talha",
-                                              @"data": @"Talha",
-                                              @"retain": [NSNumber numberWithBool:retained]
-                                              }
-                                      }];
-}
+// - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
+//     NSLog(@"dataStringMusab");
+//     // NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//      [self.emitter sendEventWithName:@"mqtt_events"
+//                                body:@{
+//                                       @"event": @"message",
+//                                       @"clientRef": self.clientRef,
+//                                       @"message": @{
+//                                               @"topic": topic,
+//                                             @"data_original": @"Talha",
+//                                               @"data": @"Talha",
+//                                               @"retain": [NSNumber numberWithBool:retained]
+//                                               }
+//                                       }];
+// }
 
-- (void)dealloc {
-    [self disconnect];
-}
+// - (void)dealloc {
+//     [self disconnect];
+// }
 
-@end
+// @end
 // - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
 //                                 body:@{
 //                                       @"event": @"message",
@@ -231,24 +231,31 @@
 //                                               @"retain": [NSNumber numberWithBool:retained]
 //                                               }
 // }
-// // - (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
-// //     NSLog(@"message: %@", @{@"topic": topic, @"data": data});
-// //     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-// //     [self.emitter sendEventWithName:@"mqtt_events"
-// //                                body:@{
-// //                                       @"event": @"message",
-// //                                       @"clientRef": self.clientRef,
-// //                                       @"message": @{
-// //                                               @"topic": topic,
-// //                                               @"data": dataString,
-// //                                               @"data_original": data,
-// //                                               @"retain": [NSNumber numberWithBool:retained]
-// //                                               }
-// //                                       }];
-// // }
+- (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
+    NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    // Check if dataString is nil
+    if (!dataString) {
+        NSLog(@"Failed to convert data to string for topic: %@", topic);
+        return;
+    }
 
-// - (void)dealloc {
-//     [self disconnect];
-// }
+    NSLog(@"message: %@", @{@"topic": topic, @"data": dataString});
 
-// @end
+    [self.emitter sendEventWithName:@"mqtt_events"
+                               body:@{
+                                      @"event": @"message",
+                                      @"clientRef": self.clientRef,
+                                      @"message": @{
+                                              @"topic": topic,
+                                              @"data": dataString,
+                                              @"retain": [NSNumber numberWithBool:retained]
+                                              }
+                                      }];
+}
+
+- (void)dealloc {
+    [self disconnect];
+}
+
+@end
