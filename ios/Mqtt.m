@@ -133,6 +133,14 @@
             break;
         }
         case MQTTSessionManagerStateStarting:
+        {
+    [self.emitter sendEventWithName:@"mqtt_events"
+                                       body:@{@"event": @"Starting",
+                                              @"clientRef": self.clientRef,
+                                              @"message": errorMsg
+                                              }];
+            break;
+        }
         default:
             break;
     }
