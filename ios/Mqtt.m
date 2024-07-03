@@ -204,9 +204,8 @@
     NSLog(@"dataStringMusab");
       dispatch_queue_t queue = dispatch_queue_create("com.hawking.app.anchor.mqtt", NULL);
     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-     [self.emitter sendEventWithName:@"mqtt_events"
-                               body:@{
-                                      @"event": @"message",
+     NSDictionary *body=@{
+                        @"event": @"message",
                                       @"clientRef": self.clientRef,
                                       @"message": @{
                                               @"topic": topic,
@@ -214,7 +213,10 @@
                                               @"data": @"Talha",
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
-                                      }];
+                                      };
+     [self.emitter sendEventWithName:@"mqtt_events"
+                               body:body
+                                      ];
 }
 
 - (void)dealloc {
