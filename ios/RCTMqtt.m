@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE();
 {
     if ((self = [super init])) {
         _clients = [[NSMutableDictionary alloc] init];
-          hasListeners = YES; // Set hasListeners to true by default
+        //   hasListeners = YES; // Set hasListeners to true by default
     }
     return self;
     
@@ -47,10 +47,12 @@ RCT_EXPORT_MODULE();
 
 
 - (void)sendEventWithName:(NSString *)name body:(id)body {
-    // if (hasListeners && self.bridge) { // Only send events if anyone is listening
+    if (hasListeners && self.bridge) { // Only send events if anyone is listening
         NSLog(@"Sending event: %@ with body: %@", name, body);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [super sendEventWithName:name body:body];
-    // }
+        });
+    }
 }
 
 - (NSArray<NSString *> *)supportedEvents {
