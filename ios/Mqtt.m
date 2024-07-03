@@ -181,12 +181,18 @@
     }
     return ret;
 }
-
-- (void)subscribe:(NSString *)topic qos:(NSNumber *)qos {
-    NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
-    [subscriptions setObject:qos forKey:topic];
-    [self.manager setSubscriptions:subscriptions];
-}
+[session subscribeToTopic:@"kluger_send_july_mid" atLevel:MQTTQosLevelExactlyOnce subscribeHandler:^(NSError *error, NSArray<NSNumber *> *gQoss) {
+    if (error) {
+        NSLog(@"Subscription failed %@", error.localizedDescription);
+    } else {
+        NSLog(@"Subscription sucessfull! Granted Qos: %@", gQoss);
+    }
+ }];
+// - (void)subscribe:(NSString *)topic qos:(NSNumber *)qos {
+//     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
+//     [subscriptions setObject:qos forKey:topic];
+//     [self.manager setSubscriptions:subscriptions];
+// }
 
 - (void)unsubscribe:(NSString *)topic {
     NSMutableDictionary *subscriptions = [self.manager.subscriptions mutableCopy];
@@ -232,16 +238,8 @@
 //                                               }
 // }
 - (void)handleMessage:(NSData *)data onTopic:(NSString *)topic retained:(BOOL)retained {
+    NSLog(@"message: %@", @{@"topic": topic, @"data": data});
     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    
-    // Check if dataString is nil
-    if (!dataString) {
-        NSLog(@"Failed to convert data to string for topic: %@", topic);
-        return;
-    }
-
-    NSLog(@"message: %@", @{@"topic": topic, @"data": dataString});
-
     [self.emitter sendEventWithName:@"mqtt_events"
                                body:@{
                                       @"event": @"message",
@@ -249,6 +247,7 @@
                                       @"message": @{
                                               @"topic": topic,
                                               @"data": dataString,
+                                              @"data_original": data,
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       }];
