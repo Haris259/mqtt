@@ -93,6 +93,7 @@
 }
 
 - (void)sessionManager:(MQTTSessionManager *)sessonManager didChangeState:(MQTTSessionManagerState)newState {
+   dispatch_async(dispatch_get_main_queue(), ^{
     switch (newState) {
         case MQTTSessionManagerStateClosed:
             [self.emitter sendEventWithName:@"mqtt_events"
@@ -136,6 +137,7 @@
         default:
             break;
     }
+});
 }
 
 - (void)messageDelivered:(UInt16)msgID {
@@ -202,6 +204,7 @@
 
 - (void)newMessage:(MQTTSession *)session data:(NSData *)data onTopic:(NSString *)topic qos:(MQTTQosLevel)qos retained:(BOOL)retained mid:(unsigned int)mid {
     NSLog(@"dataStringMusab");
+    dispatch_async(dispatch_get_main_queue(), ^{
     NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
      [self.emitter sendEventWithName:@"mqtt_events"
                                body:@{
@@ -214,6 +217,7 @@
                                               @"retain": [NSNumber numberWithBool:retained]
                                               }
                                       }];
+    });
 }
 
 - (void)dealloc {

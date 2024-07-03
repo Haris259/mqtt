@@ -49,9 +49,7 @@ RCT_EXPORT_MODULE();
 - (void)sendEventWithName:(NSString *)name body:(id)body {
     if (hasListeners && self.bridge) { // Only send events if anyone is listening
         NSLog(@"Sending event: %@ with body: %@", name, body);
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [super sendEventWithName:name body:body];
-        });
     }
 }
 
