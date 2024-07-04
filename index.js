@@ -100,9 +100,9 @@ module.exports = {
 
     /* Listen mqtt event */
     if (this.eventHandler === null) {
-      console.log("add mqtt_events listener");
+      // console.log("add mqtt_events listener");
       this.eventHandler = emitter.addListener("mqtt_events", (data) => {
-        console.log("Received MQTT EVENTS:", data);
+        // console.log("Received MQTT EVENTS:", data);
         this.dispatchEvents(data);
       });
     }
